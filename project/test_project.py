@@ -3,11 +3,15 @@ import project
 
 
 
-def test_sum_of_hand():
-    empty_deck = [];
-    size_one_deck = [("Hearts", 1)];
-    small_deck = [("Hearts", 1), ("Diamonds", 5), ("Spades", 1)];
+empty_deck = [];
+size_one_deck = [("Hearts", 1)];
+small_deck = [("Hearts", 1), ("Diamonds", 5), ("Spades", 1)];
+a_deck = [("Alpha", 101)];
+b_deck = [("Beta", 905)];
 
+
+
+def test_sum_of_hand():
     assert project.sum_of_hand(empty_deck) == 0;
     assert project.sum_of_hand(size_one_deck) == 11;
     assert project.sum_of_hand(small_deck) == 17;
@@ -50,3 +54,42 @@ def test_bust():
     assert project.bust(player_five, cpu_five) == "player";
     assert project.bust(player_six, cpu_six) == "player";
     assert project.bust(player_seven, cpu_seven) == "cpu";
+
+
+
+def test_peek():
+    assert project.peek(empty_deck) == "exit";
+    assert project.peek(size_one_deck) == ("Hearts", 1);
+    assert project.peek(small_deck) == ("Hearts", 1);
+
+
+
+def test_swap():
+    new_a_deck, new_b_deck = project.swap(a_deck, b_deck);
+
+    assert new_a_deck == b_deck;
+    assert new_b_deck == a_deck;
+
+
+
+def test_special_cards():
+    new_empty_deck = project.special_cards(empty_deck.copy());
+    new_size_one_deck = project.special_cards(size_one_deck.copy());
+    new_small_deck = project.special_cards(small_deck.copy());
+
+    assert len(new_empty_deck) == 1;
+    assert len(new_size_one_deck) == 2;
+    assert len(new_small_deck) == 4;
+    assert project.sum_of_hand(new_empty_deck) < 0;
+    assert project.sum_of_hand(new_size_one_deck) < 11;
+    assert project.sum_of_hand(new_empty_deck) < 17;
+    assert project.special_cards(new_small_deck) == "exit";
+
+
+
+def test_draw():
+    new_size_one_deck, draw_card = project.draw(size_one_deck.copy());
+
+    assert project.draw(empty_deck.copy()) == "exit";
+    assert len(new_size_one_deck) == 0;
+    assert draw_card == ("Hearts", 1);

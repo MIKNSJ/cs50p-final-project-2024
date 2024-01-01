@@ -80,12 +80,58 @@ def generate_cards():
 
 
 
+# draw a card
+def draw(deck):
+    if (len(deck) == 0):
+        print("The deck is empty!")
+        return "exit";
+
+    card = deck.pop(0);
+    return deck, card;
+
+
+
 # look at the next card
 def peek(deck):
     if (len(deck) == 0):
-        return f"You cannot call peek on a empty deck!";
+        print("You cannot call peek on a empty deck!")
+        return "exit";
 
     return deck[0];
+
+
+
+# swap decks
+def swap(deckOne, deckTwo):
+    return deckTwo, deckOne;
+
+
+
+# obtain special cards
+def special_cards(hand):
+    special = [("Circle", -1), ("Rectangle", -2), ("Triangle", -3),
+               ("Square", -4), ("Pentagon", -5)];
+    
+    for card in hand:
+        if (card[1] < 0):
+            print("You can only have one special card in your hand!")
+            return "exit";
+
+    special_card = random.choice(special);
+    hand.append(special_card);
+
+    return hand;
+
+
+# split
+def split(hand):
+    ...
+
+
+
+# double down
+def double_down(hand):
+    ...
 
 
 
@@ -157,6 +203,8 @@ def test_envir():
     # print(peek(empty_deck));
     # small_deck = [("Hearts", 1), ("Diamonds", 5), ("Spades", 1)];
     # sum_of_hand(small_deck);
+    # new_empty_deck = special_cards(empty_deck);
+    # print(new_empty_deck);
 
 
 
