@@ -93,7 +93,7 @@ def peek(deck):
 def sum_of_hand(deck):
     sum = 0;
     for card in deck:
-        if (card[1] == 1 and sum + card[1] <= 21):
+        if (card[1] == 1 and sum + 11 <= 21):
             sum += 11;
         else:
             sum += card[1];
@@ -103,8 +103,27 @@ def sum_of_hand(deck):
 
 
 # determine the winner of the current hand
-def bust(playerHand, cpuHand):
-    ...
+def bust(sumPlayerHand, sumCpuHand):
+    if (sumPlayerHand > 21 and sumCpuHand <= 21):
+        return "cpu";
+
+    elif (sumPlayerHand <= 21 and sumCpuHand > 21):
+        return "player";
+
+    elif (sumPlayerHand == 21 and sumCpuHand != 21):
+        return "player";
+
+    elif (sumPlayerHand != 21 and sumCpuHand == 21):
+        return "cpu";
+    
+    elif (sumPlayerHand > sumCpuHand):
+        return "player";
+
+    elif (sumPlayerHand < sumCpuHand):
+        return "cpu";
+
+    else:
+        return "neither";
 
 
 
@@ -127,15 +146,17 @@ def profile():
 # testing environment
 def test_envir():
     deck = generate_cards();
-    print_cards(deck);
+    # print_cards(deck);
     # empty_deck = [];
     # print_cards(generate_cards());
     #name, coins = profile();
     #player = Player(name, int(coins));
     #print(player.__str__());
     # print(peek(deck));
-    print(sum_of_hand(deck));
+    # print(sum_of_hand(deck));
     # print(peek(empty_deck));
+    # small_deck = [("Hearts", 1), ("Diamonds", 5), ("Spades", 1)];
+    # sum_of_hand(small_deck);
 
 
 
