@@ -53,12 +53,14 @@ class Player:
     # payout
     def payout(self, bet, winner):
         if (winner == "player"):
+            print("You have won!");
             self._coins += 1.5 * bet;
         
         elif (winner == "cpu"):
-            self._coins -= bet;
+            print("You have lost...");
     
         else:
+            print("You have tied.");
             self.coins += bet;
     
 
@@ -79,9 +81,6 @@ class Player:
 
     @coins.setter
     def coins(self, coins):
-        if (coins < 0):
-            sys.exit("You have been kicked out of the casino. Reason: You ran out of money.");
-        
         self._coins = coins;
 
 
@@ -303,115 +302,316 @@ def profile():
 # create the game
 def game():
     print("[SYSTEM]: Loading Blackjack...");
-    deck = generate_cards();
-    table = Table();
-    name, coins = profile();
-    player = Player(name, int(coins));
-    print(player.__str__());
+    with open("log.txt", "w") as file:
+        deck = generate_cards();
+        #deck.insert(0, ("Gem", 1));
+        #deck.insert(0, ("Gem", 1));
+        #deck.insert(0, ("Gem", 1));
+        #deck.insert(0, ("Gem", 1));
+        #deck.insert(0, ("Gem", 1));
+        table = Table();
+        name, coins = profile();
+        player = Player(name, int(coins));
+        start_amount = player.coins;
+        file.write(f"Username: {player.username}\nCoins: {player.coins}\n\n");
+        print(player.__str__());
 
-    userInput = input("Type {Play/play} or quit: ").strip().lower();
-    while (userInput != "quit"):
-        deck, card = draw(deck);
-        table.player_hand.append(card);
-        deck, card = draw(deck);
-        table.cpu_hand.append(card);
-        table.cpu_hidden_hand.append(card);
-        deck, card = draw(deck);
-        table.player_hand.append(card);
-        deck, card = draw(deck);
-        table.cpu_hand.append(card);
-        table.cpu_hidden_hand.append(f"(?)");
+        userInput = input("Type {Play/play} or quit: ").strip().lower();
+        while (userInput != "quit"):
+            if (len(deck) == 0):
+                deck = generate_cards();
+                print("A new deck has been generated!");
+            
+            bet = player.place_bet();
+            print(f"\nYou have placed a bet of amount: {bet}.");
+            file.write(f"Bet: {bet}, Coins: {player.coins}\n");
+            print(f"Your new balance is {player.coins} coins.");
 
-        print(f"\n\n\n");
-        print(f"Cards remaining: {len(deck)}");
-        print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
-        print_hand(table.player_hand, "Player");
+            divide = False;
+            left_dbl = False;
+            right_dbl = False;
+            deck, card = draw(deck);
+            table.player_hand.append(card);
+            deck, card = draw(deck);
+            table.cpu_hand.append(card);
+            table.cpu_hidden_hand.append(card);
+            deck, card = draw(deck);
+            table.player_hand.append(card);
+            deck, card = draw(deck);
+            table.cpu_hand.append(card);
+            table.cpu_hidden_hand.append(f"(?)");
 
-        userAction = actions();
-        while (True):
-            if (userAction == 0):
+            print(f"\n\n\n");
+            print(f"Cards remaining: {len(deck)}");
+            print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
+            print_hand(table.player_hand, "Player");
+
+            userAction = actions();
+            while (True):
+                if (userAction == 0):
+                    if (len(deck) == 0):
+                        print("There is no more cards in the deck!");
+                        break;
+                    
+                    if (divide == False):
+                        deck, card = draw(deck);
+                        table.player_hand.append(card);
+
+                        if (sum_of_hand(table.player_hand) >= 21):
+                            break;
+
+                    else:
+                        if (len(deck) <= 1):
+                            break;
+                        
+                        if (left_dbl == False):
+                            side = input("Type h1 or h2 to draw a card on that hand: ").strip().lower();
+
+                            if (side == "h1"):
+                                if (sum_of_hand(left) < 21):
+                                    deck, card = draw(deck);
+                                    left.append(card);
+
+                                else:
+                                    print(f"Left side has exceeded 21");
+                        
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+                        
+                        if (right_dbl == False):
+                            if (side == "h2"):
+                                if (sum_of_hand(right) < 21):
+                                    deck, card = draw(deck);
+                                    right.append(card);
+
+                                else:
+                                    print(f"Right side has exceeded 21");
+
+                            if (sum_of_hand(left) >= 21 and sum_of_hand(right) >= 21):
+                                break;
+
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+                
+                if (userAction == 1):
+                    break;
+                
+                if (userAction == 2):
+                    if (divide == False):
+                        if (split(table.player_hand) == "exit"):
+                            break;
+                        
+                        left, right = split(table.player_hand);
+                        divide = True;
+                    
+                    else:
+                        print("You have already split. Limit: 1.\n");
+
+                if (userAction == 3):
+                    if (divide == False):
+                        table.player_hand, table.cpu_hand = swap(table.player_hand, table.cpu_hand);
+
+                        table.cpu_hidden_hand.clear();
+                        for i in range(len(table.cpu_hand)):
+                            if (i == 0):
+                                table.cpu_hidden_hand.append(table.cpu_hand[i]);
+                            else:
+                                table.cpu_hidden_hand.append("(?)");
+
+                    else:
+                        side = input("Type sp1 or sp2 to draw a card on that hand: ").strip().lower();
+
+                        if (left_dbl == False):
+                            if (side == "sp1"):
+                                left, table.cpu_hand = swap(left, table.cpu_hand);
+
+                                table.cpu_hidden_hand.clear();
+                                for i in range(len(left)):
+                                    if (i == 0):
+                                        table.cpu_hidden_hand.append(left[i]);
+                                    else:
+                                        table.cpu_hidden_hand.append("(?)");
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+
+                        if (right_dbl == False):
+                            if (side == "sp2"):
+                                right, table.cpu_hand = swap(right, table.cpu_hand);
+
+                                table.cpu_hidden_hand.clear();
+                                for i in range(len(left)):
+                                    if (i == 0):
+                                        table.cpu_hidden_hand.append(right[i]);
+                                    else:
+                                        table.cpu_hidden_hand.append("(?)");
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+
+                
+                if (userAction == 4):
+                    if (divide == False):
+                        if (len(deck) == 0):
+                            print("There is no more cards in the deck!");
+                            break;
+                        
+                        deck, card = draw(deck);
+                        table.player_hand.append(card);
+                        break;
+
+                    else:
+                        if (len(deck) <= 1):
+                            break;
+
+                        side = input("Type dd1 or dd2 to dbl down on that hand: ").strip().lower();
+
+                        if (left_dbl == False):
+                            if (side == "dd1"):
+                                if (sum_of_hand(left) < 21):
+                                    deck, card = draw(deck);
+                                    left.append(card);
+                                    left_dbl = True;
+
+                                else:
+                                    print(f"Left side has exceeded 21");
+                        
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+                        
+                        if (right_dbl == False):
+                            if (side == "dd2"):
+                                if (sum_of_hand(right) < 21):
+                                    deck, card = draw(deck);
+                                    right.append(card);
+                                    right_dbl = True;
+
+                                else:
+                                    print(f"Right side has exceeded 21");
+                        
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+
+                        if (sum_of_hand(left) >= 21 and sum_of_hand(right) >= 21):
+                            break;
+
+                if (userAction == 5):
+                    if (divide == False):
+                        special_cards(table.player_hand);
+                    else:
+                        side = int(input("Type 1 or 2 to draw a card on that hand: "));
+
+                        if (side == 1):
+                            special_cards(left);
+                        
+                        if (side == 2):
+                            special_cards(right);
+                
+                if (userAction == 6):
+                    if (divide == False):
+                        print(f"\nPEEKED CARD: {peek(deck)}\n");
+                    else:
+                        if (left_dbl == False):
+                            print(f"\nPEEKED CARD 1: {peek(deck)}\n");
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+                        
+                        if (right_dbl == False):
+                            print(f"\nPEEKED CARD 2: {peek(deck)}\n");
+                        else:
+                            print("\nYou cannot perform this action due to a dbl down.");
+                
+                if (left_dbl == True and right_dbl == True):
+                    break;
+                
+                if (divide == False):
+                    print(f"Cards remaining: {len(deck)}");
+                    print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
+                    print_hand(table.player_hand, "Player");
+                    userAction = actions();
+                    print(f"\n\n");
+
+                else:
+                    print(f"Cards leftover: {len(deck)}");
+                    print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
+                    print_hand(left, "Player-Left");
+                    print_hand(right, "Player-Right");
+                    userAction = actions();
+                    print(f"\n\n");
+            
+            while (sum_of_hand(table.cpu_hand) < 17):
                 if (len(deck) == 0):
                     break;
                 
                 deck, card = draw(deck);
-                table.player_hand.append(card);
+                table.cpu_hand.append(card);
+                table.cpu_hidden_hand.append("(?)");
+                print(f"\n\n");
+            
+            if (divide == False):
+                print(f"Cards leftover: {len(deck)}");
+                print_hand(table.cpu_hand, "CPUBot");
+                print_hand(table.player_hand, "Player");
+                result = bust(sum_of_hand(table.player_hand), sum_of_hand(table.cpu_hand));
+                player.payout(bet, result);
 
-                if (sum_of_hand(table.player_hand) >= 21):
-                    break;
+                if (result == "player"):
+                    file.write(f"Won, Payout: {1.5 * bet}, Coins: {player.coins}\n");
+                elif (result == "cpu"):
+                    file.write(f"Lost, Payout: {-1 * bet}, Coins: {player.coins}\n");
+                else:
+                    file.write(f"Tied, Payout: {bet}, Coins: {player.coins}\n");
             
-            if (userAction == 1):
-                break;
-            
-            if (userAction == 2):
-                if (split(table.player_hand) == "exit"):
-                    break;
+            else:
+                print(f"Cards leftover: {len(deck)}");
+                print_hand(table.cpu_hand, "CPUBot");
+                print_hand(left, "Player-Left");
+                print_hand(right, "Player-Right");
+                bet = bet / 2.0;
+                result = bust(sum_of_hand(left), sum_of_hand(table.cpu_hand));
+                resultTwo = bust(sum_of_hand(right), sum_of_hand(table.cpu_hand));
 
-                left, right = split(table.player_hand);
-                hands = [left, right];
+                if (left_dbl == True):
+                    player.payout(bet * 2, result);
+                else:
+                    player.payout(bet, result);
+                
+                if (result == "player"):
+                    file.write(f"Won, Payout: {1.5 * bet}, Coins: {player.coins}\n");
+                elif (result == "cpu"):
+                    file.write(f"Lost, Payout: {-1 * bet}, Coins: {player.coins}\n");
+                else:
+                    file.write(f"Tied, Payout: {bet}, Coins: {player.coins}\n");
+                
+                if (right_dbl == True):
+                    player.payout(bet * 2, resultTwo);
+                else:
+                    player.payout(bet, resultTwo);
+                
+                if (resultTwo == "player"):
+                    file.write(f"Won, Payout: {1.5 * bet}, Coins: {player.coins}");
+                elif (resultTwo == "cpu"):
+                    file.write(f"Lost, Payout: {-1 * bet}, Coins: {player.coins}");
+                else:
+                    file.write(f"Tied, Payout: {bet}, Coins: {player.coins}");
+                
+                left.clear();
+                right.clear();
+            
+            print(f"Your new balance is {player.coins}!");
+            file.write(f"Round concluded, Coins: {player.coins}\n\n");
+            if (player.coins <= 0):
+                file.write(f"Gain: {player.coins - start_amount}\n");
+                sys.exit("\nYou have been kicked out of the casino. Reason: You ran out of money.");
+            
+            userInput = input("\nType quit or anything to continue: ").strip().lower();
+            table.flush();
 
-            if (userAction == 3):
-                table.player_hand, table.cpu_hand = swap(table.player_hand, table.cpu_hand);
-
-                table.cpu_hidden_hand.clear();
-                for i in range(len(table.cpu_hand)):
-                    if (i == 0):
-                        table.cpu_hidden_hand.append(table.cpu_hand[i]);
-                    else:
-                        table.cpu_hidden_hand.append("(?)");
-            
-            if (userAction == 5):
-                special_cards(table.player_hand);
-            
-            if (userAction == 6):
-                print(f"\nPEEKED CARD: {peek(deck)}\n");
-            
-            print(f"Cards remaining: {len(deck)}");
-            print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
-            print_hand(table.player_hand, "Player");
-            userAction = actions();
-            print(f"\n\n");
-        
-        while (sum_of_hand(table.cpu_hand) < 17):
-            if (len(deck) == 0):
-                break;
-            
-            deck, card = draw(deck);
-            table.cpu_hand.append(card);
-            table.cpu_hidden_hand.append("(?)");
-            print(f"\n\n");
-        
-        print(f"Cards leftover: {len(deck)}");
-        print_hand(table.cpu_hand, "CPUBot");
-        print_hand(table.player_hand, "Player");
-        print(bust(sum_of_hand(table.player_hand), sum_of_hand(table.cpu_hand)));
-        userInput = input("Type quit or anything to continue: ").strip().lower();
-        table.flush();
+        file.write(f"Gain: {player.coins - start_amount}\n");
 
 
 
 # testing environment
 def test_envir():
-    deck = generate_cards();
-    # print_cards(deck);
-    # empty_deck = [];
-    # print_cards(generate_cards());
-    # name, coins = profile();
-    # player = Player(name, int(coins));
-    # print(player.__str__());
-    # print(peek(deck));
-    # print(sum_of_hand(deck));
-    # print(peek(empty_deck));
-    # small_deck = [("Hearts", 1), ("Diamonds", 5), ("Spades", 1)];
-    # sum_of_hand(small_deck);
-    # new_empty_deck = special_cards(empty_deck);
-    # print(new_empty_deck);
-    #player.place_bet();
-    #print(player.coins);
-    #test = Table();
-    #test.cpu_hand.append(1);
-    #print(len(test.cpu_hand));
-    #test.flush();
-    #print(len(test.cpu_hand));
+    ...
 
 
 

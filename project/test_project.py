@@ -128,7 +128,7 @@ def test_payout():
     copy_standard_player_three.payout(100, "neither");
 
     assert copy_standard_player.coins == 250;
-    assert copy_standard_player_two.coins == 0;
+    assert copy_standard_player_two.coins == 100;
     assert copy_standard_player_three.coins == 200;
 
 
