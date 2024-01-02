@@ -1,5 +1,6 @@
 import pytest
 import project
+import copy
 
 
 
@@ -8,6 +9,10 @@ size_one_deck = [("Hearts", 1)];
 small_deck = [("Hearts", 1), ("Diamonds", 5), ("Spades", 1)];
 a_deck = [("Alpha", 101)];
 b_deck = [("Beta", 905)];
+match_deck = [("Pizza", 8), ("Pizza", 8)];
+oxy_deck = [("Hot", 99), ("Cold", -20)];
+standard_player = project.Player("Leon", 100);
+standard_table = project.Table();
 
 
 
@@ -93,3 +98,46 @@ def test_draw():
     assert project.draw(empty_deck.copy()) == "exit";
     assert len(new_size_one_deck) == 0;
     assert draw_card == ("Hearts", 1);
+
+
+
+def test_split():
+    left, right = project.split(match_deck.copy());
+
+    assert project.split(size_one_deck.copy()) == "exit";
+    assert project.split(small_deck.copy()) == "exit";
+    assert project.split(oxy_deck.copy()) == "exit";
+    assert left == [("Pizza", 8)];
+    assert right == [("Pizza", 8)];
+    assert left == right;
+
+
+
+def test_payout():
+    copy_standard_player = copy.copy(standard_player);
+    copy_standard_player_two = copy.copy(standard_player);
+    copy_standard_player_three = copy.copy(standard_player);
+
+    copy_standard_player.payout(100, "player");
+    copy_standard_player_two.payout(100, "cpu");
+    copy_standard_player_three.payout(100, "neither");
+
+    assert copy_standard_player.coins == 250;
+    assert copy_standard_player_two.coins == 0;
+    assert copy_standard_player_three.coins == 200;
+
+
+
+def test_flush():
+    copy_standard_table = copy.copy(standard_table);
+
+    copy_standard_table.cpu_hand.append(1);
+    copy_standard_table.player_hand.append(1);
+
+    assert len(copy_standard_table.player_hand) == 1;
+    assert len(copy_standard_table.cpu_hand) == 1;
+
+    copy_standard_table.flush();
+
+    assert len(copy_standard_table.player_hand) == 0;
+    assert len(copy_standard_table.cpu_hand) == 0;

@@ -3,6 +3,19 @@ import sys
 
 
 
+# table setup
+class Table:
+    def __init__(self):
+        self.player_hand = [];
+        self.cpu_hand = [];
+
+
+    def flush(self):
+        self.player_hand.clear();
+        self.cpu_hand.clear();
+
+
+
 # player setup
 class Player:
     def __init__(self, username, coins):
@@ -14,8 +27,37 @@ class Player:
         return f"\
             \n=================================================== \
             \n| Welcome {self.username}!                          \
-            \n| You currently have {self.coins} coins.            \
+            \n| You currently have {self.coins} coin(s).          \
             \n===================================================";
+
+
+    # player makes a bet
+    def place_bet(self):
+        bet = int(input("Please enter the amount to bet: "));
+
+        while (True):
+            if (bet > 0 and bet <= self._coins):
+                break;
+
+            print("You must bet a positive number that does not exceed the number of coins you currently have.");
+
+            bet = int(input("Please enter the amount to bet: "));
+        
+        self._coins -= bet;
+
+        return bet;
+
+
+    # payout
+    def payout(self, bet, winner):
+        if (winner == "player"):
+            self._coins += 1.5 * bet;
+        
+        elif (winner == "cpu"):
+            self._coins -= bet;
+    
+        else:
+            self.coins += bet;
     
 
     @property
@@ -35,13 +77,31 @@ class Player:
 
     @coins.setter
     def coins(self, coins):
-        while (True):
-            if (coins > 0):
-                break;
-            print("The amount of coins deposited should be positive.");
-            coins = int(input("Please enter the amount of coins to deposit: "));
+        if (coins < 0):
+            sys.exit("You have been kicked out of the casino. Reason: You ran out of money.");
         
         self._coins = coins;
+
+
+
+# actions
+def actions():
+    action = input("Please enter your next move as we have the following choices {h/hit/draw}, {stand/stn}, {split}, {swap/sp}, {dd}, {special}: ").strip().lower();
+
+    if (action == "h" or action == "hit" or action == "draw"):
+        return 0;
+    elif (action == "stand" or action == "stn"):
+        return 1;
+    elif (action == "split"):
+        return 2;
+    elif (action == "swap" or action == "sp"):
+        return 3;
+    elif (action == "dd" or action == "double down" or action == "dbldn"):
+        return 4;
+    elif (action == "special"):
+        return 5;
+    else:
+        return -1;
 
 
 
@@ -74,7 +134,7 @@ def generate_cards():
             else:
                 cards.append(("Spades", 10));
     
-    # random.shuffle(cards);
+    random.shuffle(cards);
 
     return cards;
 
@@ -123,22 +183,33 @@ def special_cards(hand):
     return hand;
 
 
+
 # split
 def split(hand):
-    ...
+    if (len(hand) < 2):
+        print("You cannot call split on a hand with less than two cards!");
+        return "exit";
 
+    elif (len(hand) > 2):
+        print("You cannot call split on a hand with greater than two cards!");
+        return "exit";
 
+    elif (hand[0][1] != hand[1][1]):
+        print("You cannot call split on two non-equal cards!");
+        return "exit";
 
-# double down
-def double_down(hand):
-    ...
+    else:
+        split_hand_left = [hand[0]];
+        split_hand_right = [hand[1]];
+
+        return split_hand_left, split_hand_right;
 
 
 
 # find the sum of a hand
-def sum_of_hand(deck):
+def sum_of_hand(hand):
     sum = 0;
-    for card in deck:
+    for card in hand:
         if (card[1] == 1 and sum + 11 <= 21):
             sum += 11;
         else:
@@ -184,8 +255,17 @@ def print_cards(deck):
 # create a player profile
 def profile():
     userInput = input("Please enter a username: ");
-    depositCoins = input("Please enter the amount of coins to deposit: ");
+    depositCoins = int(input("Please enter the amount of coins to deposit: "));
+    while (depositCoins < 1):
+        print("The amount of coins deposited should be positive.");
+        depositCoins = int(input("Please enter the amount of coins to deposit: "));
     return userInput, depositCoins;
+
+
+
+# create the game
+def game():
+    ...
 
 
 
@@ -195,9 +275,9 @@ def test_envir():
     # print_cards(deck);
     # empty_deck = [];
     # print_cards(generate_cards());
-    #name, coins = profile();
-    #player = Player(name, int(coins));
-    #print(player.__str__());
+    # name, coins = profile();
+    # player = Player(name, int(coins));
+    # print(player.__str__());
     # print(peek(deck));
     # print(sum_of_hand(deck));
     # print(peek(empty_deck));
@@ -205,6 +285,13 @@ def test_envir():
     # sum_of_hand(small_deck);
     # new_empty_deck = special_cards(empty_deck);
     # print(new_empty_deck);
+    #player.place_bet();
+    #print(player.coins);
+    test = Table();
+    test.cpu_hand.append(1);
+    print(len(test.cpu_hand));
+    test.flush();
+    print(len(test.cpu_hand));
 
 
 
