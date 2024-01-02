@@ -8,11 +8,13 @@ class Table:
     def __init__(self):
         self.player_hand = [];
         self.cpu_hand = [];
+        self.cpu_hidden_hand = [];
 
 
     def flush(self):
         self.player_hand.clear();
         self.cpu_hand.clear();
+        self.cpu_hidden_hand.clear();
 
 
 
@@ -86,7 +88,7 @@ class Player:
 
 # actions
 def actions():
-    action = input("Please enter your next move as we have the following choices {h/hit/draw}, {stand/stn}, {split}, {swap/sp}, {dd}, {special}: ").strip().lower();
+    action = input("Please enter your next move as we have the following choices {h/hit/draw}, {stand/stn}, {split}, {swap/sp}, {dd}, {special}, and {peek}: ").strip().lower();
 
     if (action == "h" or action == "hit" or action == "draw"):
         return 0;
@@ -100,6 +102,8 @@ def actions():
         return 4;
     elif (action == "special"):
         return 5;
+    elif (action == "peek"):
+        return 6;
     else:
         return -1;
 
@@ -174,7 +178,7 @@ def special_cards(hand):
     
     for card in hand:
         if (card[1] < 0):
-            print("You can only have one special card in your hand!")
+            print("You can only have one special card in your hand!\n\n");
             return "exit";
 
     special_card = random.choice(special);
@@ -232,6 +236,9 @@ def bust(sumPlayerHand, sumCpuHand):
 
     elif (sumPlayerHand != 21 and sumCpuHand == 21):
         return "cpu";
+
+    elif (sumPlayerHand > 21 and sumCpuHand > 21):
+        return "cpu";
     
     elif (sumPlayerHand > sumCpuHand):
         return "player";
@@ -252,6 +259,36 @@ def print_cards(deck):
 
 
 
+# prints out a hand
+def print_hand(hand, user):
+    print(f"==================== {user} ==================================");
+    for card in hand:
+        print(card, end=" ");
+    print(f"\n\nSum: {sum_of_hand(hand)}");
+    print(f"Cards: {len(hand)}");
+    print(f"==============================================================");
+    print(f"\n\n");
+
+
+
+# prints out with hidden hand
+def print_hidden_hand(hand, hiddenHand, user):
+    print(f"==================== {user} ==================================");
+    for card in hiddenHand:
+        print(card, end=" ");
+    
+    if (hiddenHand[0][1] == 1):
+        print(f"\n\nSum: 11+ ")
+
+    else:
+        print(f"\n\nSum: {hiddenHand[0][1]}+ ");
+
+    print(f"Cards: {len(hand)}");
+    print(f"==============================================================");
+    print(f"\n\n");
+
+
+
 # create a player profile
 def profile():
     userInput = input("Please enter a username: ");
@@ -265,7 +302,90 @@ def profile():
 
 # create the game
 def game():
-    ...
+    print("[SYSTEM]: Loading Blackjack...");
+    deck = generate_cards();
+    table = Table();
+    name, coins = profile();
+    player = Player(name, int(coins));
+    print(player.__str__());
+
+    userInput = input("Type {Play/play} or quit: ").strip().lower();
+    while (userInput != "quit"):
+        deck, card = draw(deck);
+        table.player_hand.append(card);
+        deck, card = draw(deck);
+        table.cpu_hand.append(card);
+        table.cpu_hidden_hand.append(card);
+        deck, card = draw(deck);
+        table.player_hand.append(card);
+        deck, card = draw(deck);
+        table.cpu_hand.append(card);
+        table.cpu_hidden_hand.append(f"(?)");
+
+        print(f"\n\n\n");
+        print(f"Cards remaining: {len(deck)}");
+        print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
+        print_hand(table.player_hand, "Player");
+
+        userAction = actions();
+        while (True):
+            if (userAction == 0):
+                if (len(deck) == 0):
+                    break;
+                
+                deck, card = draw(deck);
+                table.player_hand.append(card);
+
+                if (sum_of_hand(table.player_hand) >= 21):
+                    break;
+            
+            if (userAction == 1):
+                break;
+            
+            if (userAction == 2):
+                if (split(table.player_hand) == "exit"):
+                    break;
+
+                left, right = split(table.player_hand);
+                hands = [left, right];
+
+            if (userAction == 3):
+                table.player_hand, table.cpu_hand = swap(table.player_hand, table.cpu_hand);
+
+                table.cpu_hidden_hand.clear();
+                for i in range(len(table.cpu_hand)):
+                    if (i == 0):
+                        table.cpu_hidden_hand.append(table.cpu_hand[i]);
+                    else:
+                        table.cpu_hidden_hand.append("(?)");
+            
+            if (userAction == 5):
+                special_cards(table.player_hand);
+            
+            if (userAction == 6):
+                print(f"\nPEEKED CARD: {peek(deck)}\n");
+            
+            print(f"Cards remaining: {len(deck)}");
+            print_hidden_hand(table.cpu_hand, table.cpu_hidden_hand, "CPUBot");
+            print_hand(table.player_hand, "Player");
+            userAction = actions();
+            print(f"\n\n");
+        
+        while (sum_of_hand(table.cpu_hand) < 17):
+            if (len(deck) == 0):
+                break;
+            
+            deck, card = draw(deck);
+            table.cpu_hand.append(card);
+            table.cpu_hidden_hand.append("(?)");
+            print(f"\n\n");
+        
+        print(f"Cards leftover: {len(deck)}");
+        print_hand(table.cpu_hand, "CPUBot");
+        print_hand(table.player_hand, "Player");
+        print(bust(sum_of_hand(table.player_hand), sum_of_hand(table.cpu_hand)));
+        userInput = input("Type quit or anything to continue: ").strip().lower();
+        table.flush();
 
 
 
@@ -287,17 +407,17 @@ def test_envir():
     # print(new_empty_deck);
     #player.place_bet();
     #print(player.coins);
-    test = Table();
-    test.cpu_hand.append(1);
-    print(len(test.cpu_hand));
-    test.flush();
-    print(len(test.cpu_hand));
+    #test = Table();
+    #test.cpu_hand.append(1);
+    #print(len(test.cpu_hand));
+    #test.flush();
+    #print(len(test.cpu_hand));
 
 
 
 # main function
 def main():
-    test_envir();
+    game();
 
 
 

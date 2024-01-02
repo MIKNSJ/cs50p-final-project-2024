@@ -52,6 +52,10 @@ def test_bust():
     player_seven = 20;
     cpu_seven = 21;
 
+    # cpu wins
+    player_eight = 30;
+    cpu_eight = 27;
+
     assert project.bust(player_one, cpu_one) == "cpu";
     assert project.bust(player_two, cpu_two) == "player";
     assert project.bust(player_three, cpu_three) == "cpu";
@@ -59,6 +63,7 @@ def test_bust():
     assert project.bust(player_five, cpu_five) == "player";
     assert project.bust(player_six, cpu_six) == "player";
     assert project.bust(player_seven, cpu_seven) == "cpu";
+    assert project.bust(player_eight, cpu_eight) == "cpu";
 
 
 
