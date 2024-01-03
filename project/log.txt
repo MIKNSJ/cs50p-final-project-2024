@@ -1,20 +1,8 @@
-Username: lop
-Coins: 1000
+Username: fw
+Coins: 314
 
-Bet: 500 Coins: 500
-Won, Payout: 750.0, Coins: 1250.0
-Round concluded, Coins: 1250.0
+Bet: 1, Coins: 313
+Won, Payout: 1.5, Coins: 314.5
+Round concluded, Coins: 314.5
 
-Bet: 1000 Coins: 250.0
-Lost, Payout: -1000, Coins: 250.0
-Round concluded, Coins: 250.0
-
-Bet: 250 Coins: 0.0
-Won, Payout: 375.0, Coins: 375.0
-Round concluded, Coins: 375.0
-
-Bet: 375 Coins: 0.0
-Lost, Payout: -375, Coins: 0.0
-Round concluded, Coins: 0.0
-
-Gain: -1000.0
+Gain: 0.5

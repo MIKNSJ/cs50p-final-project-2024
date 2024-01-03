@@ -330,6 +330,9 @@ def game():
             divide = False;
             left_dbl = False;
             right_dbl = False;
+            swapped = False;
+            left_swap = False;
+            right_swap = False;
             deck, card = draw(deck);
             table.player_hand.append(card);
             deck, card = draw(deck);
@@ -409,41 +412,60 @@ def game():
 
                 if (userAction == 3):
                     if (divide == False):
-                        table.player_hand, table.cpu_hand = swap(table.player_hand, table.cpu_hand);
+                        if (swapped == False):
+                            table.player_hand, table.cpu_hand = swap(table.player_hand, table.cpu_hand);
 
-                        table.cpu_hidden_hand.clear();
-                        for i in range(len(table.cpu_hand)):
-                            if (i == 0):
-                                table.cpu_hidden_hand.append(table.cpu_hand[i]);
-                            else:
-                                table.cpu_hidden_hand.append("(?)");
+                            table.cpu_hidden_hand.clear();
+                            for i in range(len(table.cpu_hand)):
+                                if (i == 0):
+                                    table.cpu_hidden_hand.append(table.cpu_hand[i]);
+                                else:
+                                    table.cpu_hidden_hand.append("(?)");
+
+                            swapped = True;
+                        else:
+                            print("You have already swapped! Cannot swap again.\n");
 
                     else:
                         side = input("Type sp1 or sp2 to draw a card on that hand: ").strip().lower();
 
                         if (left_dbl == False):
-                            if (side == "sp1"):
-                                left, table.cpu_hand = swap(left, table.cpu_hand);
+                            if (left_swap == False):
+                                if (side == "sp1"):
+                                    left, table.cpu_hand = swap(left, table.cpu_hand);
 
-                                table.cpu_hidden_hand.clear();
-                                for i in range(len(left)):
-                                    if (i == 0):
-                                        table.cpu_hidden_hand.append(left[i]);
-                                    else:
-                                        table.cpu_hidden_hand.append("(?)");
+                                    table.cpu_hidden_hand.clear();
+                                    for i in range(len(left)):
+                                        if (i == 0):
+                                            table.cpu_hidden_hand.append(left[i]);
+                                        else:
+                                            table.cpu_hidden_hand.append("(?)");
+
+                                left_swap = True;
+                            
+                            else:
+                                print("You have already swapped on the left side! Cannot swap again.\n");
+                        
                         else:
                             print("\nYou cannot perform this action due to a dbl down.");
 
                         if (right_dbl == False):
-                            if (side == "sp2"):
-                                right, table.cpu_hand = swap(right, table.cpu_hand);
+                            if (right_swap == False):
+                                if (side == "sp2"):
+                                    right, table.cpu_hand = swap(right, table.cpu_hand);
 
-                                table.cpu_hidden_hand.clear();
-                                for i in range(len(left)):
-                                    if (i == 0):
-                                        table.cpu_hidden_hand.append(right[i]);
-                                    else:
-                                        table.cpu_hidden_hand.append("(?)");
+                                    table.cpu_hidden_hand.clear();
+                                    for i in range(len(left)):
+                                        if (i == 0):
+                                            table.cpu_hidden_hand.append(right[i]);
+                                        else:
+                                            table.cpu_hidden_hand.append("(?)");
+
+                                right_swap = True;
+                            
+                            else:
+                                print("You have already swapped on the right! Cannot swap again.\n");
+
                         else:
                             print("\nYou cannot perform this action due to a dbl down.");
 
@@ -497,7 +519,7 @@ def game():
                     if (divide == False):
                         special_cards(table.player_hand);
                     else:
-                        side = int(input("Type 1 or 2 to draw a card on that hand: "));
+                        side = int(input("Type sp1 or sp2 to draw a card on that hand: "));
 
                         if (side == 1):
                             special_cards(left);
