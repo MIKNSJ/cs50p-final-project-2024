@@ -1,8 +1,8 @@
-Username: fw
-Coins: 314
+Username: dwad
+Coins: 10000
 
-Bet: 1, Coins: 313
-Won, Payout: 1.5, Coins: 314.5
-Round concluded, Coins: 314.5
+Bet: 1000.0, Coins: 9000.0
+Won, Payout: 3000.0, Coins: 11000.0
+Round concluded, Coins: 11000.0
 
-Gain: 0.5
+Gain: 1000.0
