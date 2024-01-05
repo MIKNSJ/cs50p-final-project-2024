@@ -1,8 +1,9 @@
-Username: dwad
-Coins: 10000
+Username: dawd
+Coins: 12414214
 
-Bet: 1000.0, Coins: 9000.0
-Won, Payout: 3000.0, Coins: 11000.0
-Round concluded, Coins: 11000.0
+Bet: 1000.0, Coins: 12413214.0
+Left Bet: 500.0, Right Bet: 500.0WON, Payout: 750.0, Coins: 12413964.0
+WON, Payout: 750.0, Coins: 12414714.0
+Round concluded, Coins: 12414714.0
 
-Gain: 1000.0
+Net: 500.0

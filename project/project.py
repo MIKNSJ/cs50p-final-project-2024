@@ -74,13 +74,13 @@ class Player:
     # write to results
     def write_results(self, file, bet, result):
         if (result == "player"):
-            file.write(f"Won, Payout: {1.5 * bet}, Coins: {self._coins}\n");
+            file.write(f"WON, Payout: {1.5 * bet}, Coins: {self._coins}\n");
         
         elif (result == "cpu"):
-            file.write(f"Lost, Payout: {-1 * bet}, Coins: {self._coins}\n");
+            file.write(f"LOST, Payout: {-1 * bet}, Coins: {self._coins}\n");
         
         else:
-            file.write(f"Tied, Payout: {bet}, Coins: {self._coins}\n");
+            file.write(f"TIED, Payout: {bet}, Coins: {self._coins}\n");
 
 
     @property
@@ -350,6 +350,8 @@ def game():
 
     with open("log.txt", "w") as file:
         deck = generate_cards();
+        deck.insert(0, ("sp", 10))
+        deck.insert(2, ("sp2", 10))
         table = Table();
         name, coins = profile();
         player = Player(name, int(coins));
@@ -366,7 +368,6 @@ def game():
                 print("[TABLE]: The deck has been refreshed.");
             
             bet = player.place_bet();
-            file.write(f"Bet: {bet}, Coins: {player.coins}\n");
             print(f"[SYSTEM]: Your new balance is {player.coins} coins."); 
             print(f"[SYSTEM]: Setting up table...");
 
@@ -437,12 +438,12 @@ def game():
                                         left.append(card);
 
                                     else:
-                                        print(f"[TABLE]: Left side has "
-                                            "exceeded 21");
+                                        print(f"\n[TABLE]: Left side has "
+                                            "exceeded 21.\n");
                             
                             else:
                                 print("\n[TABLE]: You cannot perform this action "
-                                    "due to a dbl down.");
+                                    "due to a dbl down.\n");
                             
                             if (right_dbl == False):
                                 if (side == "h2"):
@@ -451,8 +452,8 @@ def game():
                                         right.append(card);
 
                                     else:
-                                        print(f"[TABLE]: Right side has exceeded"
-                                            " 21");
+                                        print(f"\n[TABLE]: Right side has exceeded"
+                                            " 21.\n");
 
                                 if (sum_of_hand(left) >= 21 and
                                     sum_of_hand(right) >= 21):
@@ -460,7 +461,7 @@ def game():
 
                             else:
                                 print("\n[TABLE]: You cannot perform this action "
-                                    "due to a dbl down.");
+                                    "due to a dbl down.\n");
                     
                     # stand
                     if (userAction == 1):
@@ -476,7 +477,7 @@ def game():
                                 right_bet = bet / 2.0;
                             
                         else:
-                            print("[TABLE]: You have already split. Limit = 1.\n");
+                            print("\n[TABLE]: You have already split. Limit = 1.\n");
 
                     # swap
                     if (userAction == 3):
@@ -501,59 +502,57 @@ def game():
                                     "Limit = 1.\n");
 
                         else:
-                            side = input("[SYSTEM]: Type sp1 or sp2 to swap a the "
+                            side = input("\n[SYSTEM]: Type sp1 or sp2 to swap a the "
                                         "left or right deck "
                                         "with the CPU: ").strip().lower();
 
                             if (left_dbl == False):
-                                if (left_swap == False):
-                                    if (side == "sp1"):
-                                        left, table.cpu_hand = swap(left,
-                                                                    table.cpu_hand);
+                                if (left_swap == False and side == "sp1" and sum_of_hand(left) < 21):
+                                    left, table.cpu_hand = swap(left,
+                                                                table.cpu_hand);
 
-                                        table.cpu_hidden_hand.clear();
-                                        for i in range(len(left)):
-                                            if (i == 0):
-                                                table.cpu_hidden_hand.append(
-                                                    left[i]);
-                                            
-                                            else:
-                                                table.cpu_hidden_hand.append("(?)");
+                                    table.cpu_hidden_hand.clear();
+                                    for i in range(len(left)):
+                                        if (i == 0):
+                                            table.cpu_hidden_hand.append(
+                                                left[i]);
+                                        
+                                        else:
+                                            table.cpu_hidden_hand.append("(?)");
 
                                     left_swap = True;
-                                
+                            
                                 else:
-                                    print("[TABLE]: You have already swapped on "
+                                    print("\n[TABLE]: You have already swapped on "
                                         "the left side! Cannot swap again.\n");
                             
                             else:
                                 print("\n[TABLE]: You cannot perform this action "
-                                    "due to a dbl down.");
+                                    "due to a dbl down, invalid input, or deck exceeding 20.\n");
 
-                            if (right_dbl == False):
-                                if (right_swap == False):
-                                    if (side == "sp2"):
-                                        right, table.cpu_hand = swap(
-                                            right, table.cpu_hand);
+                            if (right_dbl == False and side == "sp2" and sum_of_hand(right) < 21):
+                                if (side == "sp2"):
+                                    right, table.cpu_hand = swap(
+                                        right, table.cpu_hand);
 
-                                        table.cpu_hidden_hand.clear();
-                                        for i in range(len(left)):
-                                            if (i == 0):
-                                                table.cpu_hidden_hand.append(
-                                                    right[i]);
-                                            
-                                            else:
-                                                table.cpu_hidden_hand.append("(?)");
+                                    table.cpu_hidden_hand.clear();
+                                    for i in range(len(left)):
+                                        if (i == 0):
+                                            table.cpu_hidden_hand.append(
+                                                right[i]);
+                                        
+                                        else:
+                                            table.cpu_hidden_hand.append("(?)");
 
                                     right_swap = True;
-                                
+                            
                                 else:
-                                    print("[TABLE]: You have already swapped on "
-                                        "the right! Cannot swap again.\n");
+                                    print("\n[TABLE]: You have already swapped on "
+                                        "the right side! Cannot swap again.\n");
 
                             else:
                                 print("\n[TABLE]: You cannot perform this action "
-                                    "due to a dbl down.");
+                                    "due to a dbl down, invalid input, or deck exceeding 20.");
 
                     # double down
                     if (userAction == 4):
@@ -641,8 +640,8 @@ def game():
                         if (divide == False):
                             special_cards(table.player_hand);
                         else:
-                            side = int(input("[SYSTEM]: Type sp1 or sp2 to draw a "
-                                            "card on that hand: "));
+                            side = input("[SYSTEM]: Type sp1 or sp2 to draw a "
+                                            "card on that hand: ");
 
                             if (side == "sp1"):
                                 print("\n[TABLE]: Card has been added to the "
@@ -668,8 +667,7 @@ def game():
                         else:
                             if (left_dbl == False):
                                 if (left_peek == False):
-                                    print(f"\n[TABLE]: PEEKED CARD 1 = "
-                                        "{peek(deck)}\n");
+                                    print(f"\n[TABLE]: PEEKED CARD 1 = {peek(deck)}\n");
                                 
                                 else:
                                     print("[TABLE]: You have already peeked the "
@@ -680,8 +678,7 @@ def game():
                                 
                             if (right_dbl == False):
                                 if (right_peek == False):
-                                    print(f"\n[TABLE]: PEEKED CARD 2: "
-                                        "{peek(deck)}\n");
+                                    print(f"\n[TABLE]: PEEKED CARD 2 = {peek(deck)}\n");
                                 
                                 else:
                                     print("\n[TABLE]: You cannot perform this "
@@ -720,17 +717,18 @@ def game():
                 print(f"Coins = {player.coins}");
                 print(f"Bet = {bet}\n");
                 print(f"Cards leftover = {len(deck)}");
-                print(f"Coins = {player.coins}");
-                print(f"Left Bet = {left_bet}, Right Bet = {right_bet}");
                 print_hand(table.cpu_hand, "CPUBot");
                 print_hand(table.player_hand, "Player");
                 result = bust(sum_of_hand(table.player_hand),
                               sum_of_hand(table.cpu_hand));
                 player.payout(bet, result);
+                file.write(f"Bet: {bet}, Coins: {player.coins}\n");
                 player.write_results(file, bet, result);
             
             # deck was split
             else:
+                print(f"Coins = {player.coins}");
+                print(f"Left Bet = {left_bet}, Right Bet = {right_bet}");
                 print(f"Cards leftover: {len(deck)}");
                 print_hand(table.cpu_hand, "CPUBot");
                 print_hand(left, "Player-Left");
@@ -740,26 +738,13 @@ def game():
                 resultTwo = bust(sum_of_hand(right),
                                  sum_of_hand(table.cpu_hand));
 
-
-                # deck was split and double-downed on left side
-                if (left_dbl == True):
-                    player.payout(left_bet, result);
-                    player.write_results(file, left_bet, result);
+                file.write(f"Bet: {bet}, Coins: {player.coins}\n");
+                file.write(f"Left Bet: {left_bet}, Right Bet: {right_bet}\n");
+                player.payout(left_bet, result);
+                player.write_results(file, left_bet, result);
                 
-                # deck was split and left side payout
-                else:
-                    player.payout(bet, result);
-                    player.write_results(file, bet, result);
-                
-                # deck was split and double-downed on right side
-                if (right_dbl == True):
-                    player.payout(right_bet, resultTwo);
-                    player.write_results(file, right_bet, result);
-                
-                # deck was split and right side payout
-                else:
-                    player.payout(bet, resultTwo);
-                    player.write_results(file, bet, resultTwo);
+                player.payout(right_bet, resultTwo);
+                player.write_results(file, right_bet, resultTwo);
                 
                 left.clear();
                 right.clear();
@@ -768,7 +753,7 @@ def game():
             file.write(f"Round concluded, Coins: {player.coins}\n\n");
 
             if (player.coins <= 0):
-                file.write(f"Gain: {player.coins - start_amount}\n");
+                file.write(f"Net: {player.coins - start_amount}\n");
                 sys.exit("\n[SYSTEM]: You have been kicked out of the "
                          "casino.\nReason: You ran out of money.");
             
@@ -776,7 +761,7 @@ def game():
                               "continue: ").strip().lower();
             table.flush();
 
-        file.write(f"Gain: {player.coins - start_amount}\n");
+        file.write(f"Net: {player.coins - start_amount}\n");
 
 
 
