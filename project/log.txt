@@ -1,9 +1,16 @@
-Username: dawd
-Coins: 12414214
+Username: jl
+Coins: 10000
 
-Bet: 1000.0, Coins: 12413214.0
-Left Bet: 500.0, Right Bet: 500.0WON, Payout: 750.0, Coins: 12413964.0
-WON, Payout: 750.0, Coins: 12414714.0
-Round concluded, Coins: 12414714.0
+Bet: 1000.0, Coins: 10500.0
+WON, Payout: 1500.0, Coins: 10500.0
+Round concluded, Coins: 10500.0
 
-Net: 500.0
+Bet: 1000.0, Coins: 11000.0
+WON, Payout: 1500.0, Coins: 11000.0
+Round concluded, Coins: 11000.0
+
+Bet: 1000.0, Coins: 10000.0
+LOST, Payout: -1000.0, Coins: 10000.0
+Round concluded, Coins: 10000.0
+
+Net: 0.0
