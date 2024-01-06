@@ -71,7 +71,7 @@ class Player:
             print("[SYSTEM]: You have tied.");
             self.coins += bet;
     
-    
+
     # write to results
     def write_results(self, file, bet, result):
         if (result == "player"):
@@ -355,8 +355,8 @@ def game():
 
     with open("log.txt", "w") as file:
         deck = generate_cards();
-        deck.insert(0, ("sp", 10))
-        deck.insert(2, ("sp2", 10))
+        #deck.insert(0, ("sp", 10))
+        #deck.insert(2, ("sp2", 10))
         table = Table();
         name, coins = profile();
         player = Player(name, int(coins));
