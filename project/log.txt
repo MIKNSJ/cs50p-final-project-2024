@@ -1,16 +1,8 @@
-Username: jl
+Username: test
 Coins: 10000
 
-Bet: 1000.0, Coins: 10500.0
-WON, Payout: 1500.0, Coins: 10500.0
-Round concluded, Coins: 10500.0
+Bet: 1000.0, Coins: 9000.0
+LOST, Payout: -1000.0, Coins: 9000.0
+Round concluded, Coins: 9000.0
 
-Bet: 1000.0, Coins: 11000.0
-WON, Payout: 1500.0, Coins: 11000.0
-Round concluded, Coins: 11000.0
-
-Bet: 1000.0, Coins: 10000.0
-LOST, Payout: -1000.0, Coins: 10000.0
-Round concluded, Coins: 10000.0
-
-Net: 0.0
+Net: -1000.0

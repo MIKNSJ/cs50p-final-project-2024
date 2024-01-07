@@ -1,6 +1,8 @@
-# cs50p-final-project-2024
+# Modified Blackjack
 
 This is a final project for the following course CS50P: Introduction to Python.
+
+You can see a demo of this program [here](https://youtu.be/Y_E3LRr4nGs?si=dayE0Z54b4fA-fs0).
 
 ***
 
